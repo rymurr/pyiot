@@ -1,21 +1,17 @@
-FROM arm64v8/python:alpine
+FROM arm64v8/python:3-alpine
 
 
 # set working directory
-RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 
 # add requirements
-COPY ./requirements.txt /usr/src/app/requirements.txt
+COPY requirements.txt ./
 
 # install requirements
-RUN pip install -r requirements.txt
+RUN pip install  --no-cache-dir -r requirements.txt
 
 # add entrypoint.sh
-COPY ./entrypoint.sh /usr/src/app/entrypoint.sh
-
-# add app
-COPY . /usr/src/app
+COPY . .
 
 # run server
 CMD ["./entrypoint.sh"]
