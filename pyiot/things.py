@@ -66,6 +66,36 @@ class Yocto(Thing):
 
             loop.add_callback(alert, self.humidity, value)
 
+class Acorn(Thing):
+    """A weather sensor which updates its measurement every few seconds."""
+
+    def __init__(self):
+        Thing.__init__(self, 'Acorn Sensors', ['MultiLevelSensor'],
+                       'A web connected weather sensor')
+
+        self.humidity = Value(0.0)
+        self.add_property(
+            Property(self,
+                     'humidity',
+                     self.humidity,
+                     metadata={
+                         '@type': 'LevelProperty',
+                         'title': 'Humidity',
+                         'type': 'number',
+                         'description': 'The current humidity in %',
+                         'minimum': 0,
+                         'maximum': 100,
+                         'unit': 'percent',
+                         'readOnly': True,
+                     }))
+
+    def put(self, name, value, loop):
+        if name == 'humidity':
+            def alert(prop, value):
+                prop.notify_of_external_update(value)
+
+            loop.add_callback(alert, self.humidity, value)
+
 
 def consumer(queue, response_map, loop):
     print("entering consumer")
@@ -81,18 +111,20 @@ def consumer(queue, response_map, loop):
 
 
 def run_server(queue=None):
-    things = [AmbientWeather(), Yocto()]
+    things = [AmbientWeather(), Yocto(), Acorn()]
     # If adding more than one thing, use MultipleThings() with a name.
     # In the single thing case, the thing's name will be broadcast.
     server = WebThingServer(MultipleThings(things, 'IoTSensors'),
                             port=8088,
-                            hostname="beagle.rymurr.com")
+                            hostname="iot.rymurr.com")
     try:
         logging.info('starting the server')
 
         executor = ThreadPoolExecutor(max_workers=1)
         IOLoop.current().run_in_executor(executor, consumer, queue,
-                                         {'ambientweather': things[0], 'yocto': things[1]},
+                                         {'ambientweather': things[0],
+                                          'yocto': things[1],
+                                          'acorn': things[2]},
                                          IOLoop.current())
         #       executor.submit(consumer, queue, {'ambientweather': things[0]})
         print("starting things server")

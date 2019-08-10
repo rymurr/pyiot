@@ -2,6 +2,7 @@ from tornado.wsgi import WSGIContainer
 from tornado.ioloop import IOLoop
 from tornado.web import FallbackHandler, RequestHandler, Application
 from dateutil.parser import parse
+import time
 from flask import Flask, request
 from prometheus_client import generate_latest, REGISTRY, Gauge, Info
 from .constants import names
@@ -25,6 +26,22 @@ def main(queue=None):
     @app.route('/metrics', methods=['GET'])
     def metrics():
         return generate_latest(REGISTRY), 200
+
+    @app.route('/esp')
+    def esp():
+        vals = []
+        names = ['temp', 'light', 'pressure', 'humidity', 'time']
+        for name in names:
+            if name == 'time':
+                value = int(time.time())
+            else:
+                value = request.args[name]
+            if queue:
+                queue.put(('acorn', name, value))
+            get_gauge(name, 'acorn_').set(value)
+            vals.append(value)
+        write(vals, 'acorn', names)
+        return "OK", 200
 
     @app.route('/', methods=['POST'])
     def yocto():

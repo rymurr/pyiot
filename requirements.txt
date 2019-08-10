@@ -1,7 +1,4 @@
-coverage==4.5.1
-flake8==3.5.0
 Flask==1.0.2
-Flask-Bcrypt==0.7.1
-Flask-Testing==0.7.1
-Flask-WTF==0.14.2
 prometheus_client==0.6.0
+tornado
+webthing
