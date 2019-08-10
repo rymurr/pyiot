@@ -5,7 +5,7 @@ import datetime
 def get_file(name, headers=None):
     file_path = os.environ.get('PYIOT_PATH', os.path.expanduser("~"))
     date = datetime.datetime.utcnow().strftime('%Y%m%d')
-    filename = pyiot + '-' + date + '.csv'
+    filename = 'pyiot-' + date + '.csv'
     path = os.path.join(file_path, 'name')
     if not os.path.exists(path):
         os.makedirs(path)
