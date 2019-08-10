@@ -16,5 +16,4 @@ def yocto_data(data):
         for module in [i for i in measurements if i not in {'module', 'dataLogger'}]:
             sensor_data = measurements[module]
             results['_'.join([name, module])] = sensor_data['advertisedValue']
-        results['_'.join([name, 'unix_time'])] = time
-    return results
+    return results, time

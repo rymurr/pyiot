@@ -19,7 +19,7 @@ def main(queue=None):
     def get_gauge(name, prefix='wunderground_'):
         if name in gauges:
             return gauges[name]
-        gauge = Gauge(prefix + name, names.get(name,name))
+        gauge = Gauge(prefix + name, names.get(name, name))
         gauges[name] = gauge
         return gauge
 
@@ -46,12 +46,12 @@ def main(queue=None):
     @app.route('/', methods=['POST'])
     def yocto():
         data = request.data
-        val_dict = yocto_data(data)
+        val_dict, time = yocto_data(data)
         for name, value in val_dict.items():
             if queue:
                 queue.put(('yocto', name, value))
             get_gauge(name, '').set(value)
-            write([name, value], 'yocto', ['name', 'value'])
+            write([name, value, time], 'yocto', ['name', 'value', 'timestamp'])
         return "OK", 200
 
     @app.route('/weatherstation/updateweatherstation.php')
@@ -69,4 +69,4 @@ def main(queue=None):
         return "OK", 200
 
     print('starting flask server')
-    app.run(debug=False, port=80, host='0.0.0.0')
+    app.run(debug=False, port=9090, host='0.0.0.0')
