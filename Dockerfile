@@ -1,4 +1,4 @@
-sFROM arm64v8/python:alpine
+FROM arm64v8/python:alpine
 
 
 # set working directory
