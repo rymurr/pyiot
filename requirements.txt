@@ -3,3 +3,4 @@ prometheus_client==0.6.0
 tornado
 webthing
 python-dateutil
+azure-eventhub
